@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#161A33">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>FrasoPay — Démo</title>
+<style>
+  :root{
+    --nuit:#161A33;
+    --or:#E8A23A;
+    --creme:#F6F3EC;
+    --teal:#2C9C8F;
+    --corail:#E15641;
+    --nuit-clair:#242A52;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--nuit);
+    color:var(--creme);
+    font-family:-apple-system,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    padding-bottom:48px;
+  }
+  .banniere{
+    background:var(--corail);
+    color:var(--creme);
+    font-size:13px;
+    font-weight:700;
+    text-align:center;
+    padding:9px 12px;
+    line-height:1.35;
+  }
+  main{
+    max-width:480px;
+    margin:0 auto;
+    padding:20px;
+  }
+  .marque{
+    font-size:20px;
+    font-weight:800;
+    color:var(--or);
+    margin-bottom:16px;
+  }
+  .carte-solde{
+    background:var(--nuit-clair);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:18px;
+  }
+  .carte-solde .etiquette{
+    font-size:13px;
+    color:rgba(246,243,236,0.65);
+  }
+  .solde{
+    font-size:36px;
+    font-weight:800;
+    color:var(--or);
+    margin-top:4px;
+    font-variant-numeric:tabular-nums;
+  }
+  .actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:26px;
+  }
+  .action{
+    background:var(--nuit-clair);
+    border:none;
+    border-radius:14px;
+    color:var(--creme);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    padding:16px 12px;
+    min-height:76px;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    cursor:pointer;
+    text-align:left;
+  }
+  .action svg{
+    width:24px;
+    height:24px;
+    stroke:var(--or);
+    fill:none;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  h2{
+    font-size:16px;
+    font-weight:800;
+    margin-bottom:12px;
+  }
+  .tx{
+    background:var(--nuit-clair);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:8px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+  }
+  .tx-info{min-width:0;}
+  .tx-titre{
+    font-size:14px;
+    font-weight:700;
+  }
+  .tx-detail{
+    font-size:12px;
+    color:rgba(246,243,236,0.55);
+    margin-top:3px;
+    overflow-wrap:anywhere;
+  }
+  .tx-montant{
+    font-size:14px;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .plus{color:var(--teal);}
+  .moins{color:var(--corail);}
+  .vide{
+    text-align:center;
+    padding:26px 10px;
+    color:rgba(246,243,236,0.45);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  /* Formulaires */
+  .retour{
+    background:none;
+    border:none;
+    color:var(--or);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    padding:6px 0;
+    margin-bottom:8px;
+    cursor:pointer;
+  }
+  .titre-ecran{
+    font-size:24px;
+    font-weight:800;
+    margin-bottom:16px;
+  }
+  .champ{
+    background:var(--nuit-clair);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:12px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    color:rgba(246,243,236,0.7);
+    margin-bottom:6px;
+  }
+  input[type="text"],
+  input[type="tel"],
+  input[type="number"],
+  select{
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid var(--or);
+    color:var(--creme);
+    font-family:inherit;
+    font-size:18px;
+    font-weight:700;
+    padding:6px 0;
+    outline:none;
+    border-radius:0;
+  }
+  select option{
+    background:var(--nuit-clair);
+    color:var(--creme);
+  }
+  input.gros{
+    font-size:28px;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+  }
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible{
+    outline:2px solid var(--creme);
+    outline-offset:3px;
+  }
+  .indice{
+    font-size:13px;
+    color:rgba(246,243,236,0.7);
+    line-height:1.5;
+    margin:2px 0 14px;
+  }
+  .indice b{color:var(--teal);}
+  .erreur{
+    background:rgba(225,86,65,0.15);
+    border-left:3px solid var(--corail);
+    color:var(--creme);
+    font-size:14px;
+    line-height:1.45;
+    padding:10px 12px;
+    margin-bottom:12px;
+    border-radius:0 8px 8px 0;
+  }
+  .btn{
+    width:100%;
+    background:var(--or);
+    color:var(--nuit);
+    border:none;
+    border-radius:12px;
+    font-family:inherit;
+    font-size:16px;
+    font-weight:800;
+    padding:15px;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  .btn-sec{
+    width:100%;
+    background:transparent;
+    color:var(--creme);
+    border:1.5px solid rgba(246,243,236,0.3);
+    border-radius:12px;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    padding:13px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+  .resume{
+    background:var(--nuit-clair);
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .resume-ligne{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    font-size:14px;
+    padding:7px 0;
+    border-bottom:1px solid rgba(246,243,236,0.1);
+  }
+  .resume-ligne:last-child{border-bottom:none;}
+  .resume-ligne span:first-child{color:rgba(246,243,236,0.65);}
+  .resume-ligne b{
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    overflow-wrap:anywhere;
+  }
+  .resume-ligne.total b{
+    color:var(--or);
+    font-size:16px;
+  }
+  .succes{
+    text-align:center;
+    padding:30px 10px 10px;
+  }
+  .succes .rond{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:var(--teal);
+    margin:0 auto 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .succes .rond svg{
+    width:32px;
+    height:32px;
+    stroke:var(--nuit);
+    fill:none;
+    stroke-width:3;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .succes h3{
+    font-size:20px;
+    margin-bottom:8px;
+  }
+  .succes p{
+    font-size:14px;
+    color:rgba(246,243,236,0.7);
+    line-height:1.5;
+    margin-bottom:18px;
+  }
+  .pied{
+    margin-top:26px;
+    font-size:12px;
+    line-height:1.6;
+    color:rgba(246,243,236,0.5);
+    padding:14px;
+    border-left:2px solid var(--or);
+  }
+  .lien{
+    background:none;
+    border:none;
+    color:var(--or);
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    text-decoration:underline;
+    cursor:pointer;
+    padding:8px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="banniere" role="note">Mode démo : argent fictif. Aucun vrai paiement n'est fait. N'entre jamais de vrai code secret.</div>
+
+<main id="vue"></main>
+
+<script>
+/* ---------------------------------------------------------
+   TARIFS D'EXEMPLE (inventés) — à remplacer par les vraies grilles.
+   --------------------------------------------------------- */
+const GRATUIT = { type:"palier", paliers:[{ max:Infinity, frais:0 }] };
+
+const OPERATEURS = ["Orange Money", "Airtel Money", "M-Pesa", "Afrimoney"];
+
+const TARIFS = {
+  "Orange Money": {
+    envoi: { type:"palier", paliers:[{max:5000,frais:200},{max:20000,frais:500},{max:50000,frais:1000},{max:100000,frais:1800},{max:Infinity,frais:2500}] },
+    depot: GRATUIT,
+    retrait: { type:"palier", paliers:[{max:5000,frais:300},{max:20000,frais:700},{max:50000,frais:1300},{max:100000,frais:2200},{max:Infinity,frais:3000}] },
+    paiement: { type:"pourcentage", taux:0.01, fraisMin:100 }
+  },
+  "Airtel Money": {
+    envoi: { type:"palier", paliers:[{max:5000,frais:250},{max:20000,frais:600},{max:50000,frais:1100},{max:100000,frais:2000},{max:Infinity,frais:2800}] },
+    depot: GRATUIT,
+    retrait: { type:"palier", paliers:[{max:5000,frais:350},{max:20000,frais:800},{max:50000,frais:1400},{max:100000,frais:2400},{max:Infinity,frais:3200}] },
+    paiement: { type:"pourcentage", taux:0.01, fraisMin:100 }
+  },
+  "M-Pesa": {
+    envoi: { type:"pourcentage", taux:0.015, fraisMin:150 },
+    depot: GRATUIT,
+    retrait: { type:"pourcentage", taux:0.02, fraisMin:250 },
+    paiement: { type:"pourcentage", taux:0.012, fraisMin:100 }
+  },
+  "Afrimoney": {
+    envoi: { type:"pourcentage", taux:0.012, fraisMin:150 },
+    depot: { type:"pourcentage", taux:0.005, fraisMin:50 },
+    retrait: { type:"pourcentage", taux:0.018, fraisMin:200 },
+    paiement: { type:"pourcentage", taux:0.01, fraisMin:100 }
+  }
+};
+
+function calculerFrais(regle, montant){
+  if(regle.type === "pourcentage"){
+    return Math.max(Math.round(montant * regle.taux), regle.fraisMin);
+  }
+  const palier = regle.paliers.find(p => montant <= p.max);
+  return palier ? palier.frais : regle.paliers[regle.paliers.length - 1].frais;
+}
+
+/* ---------------------------------------------------------
+   État (solde fictif) — gardé sur le téléphone si possible
+   --------------------------------------------------------- */
+const CLE = "frasopay-demo-v1";
+const ETAT_INITIAL = () => ({ solde: 50000, tx: [] });
+let etat = ETAT_INITIAL();
+
+function charger(){
+  try{
+    const brut = localStorage.getItem(CLE);
+    if(brut){
+      const e = JSON.parse(brut);
+      if(typeof e.solde === "number" && Array.isArray(e.tx)) etat = e;
+    }
+  }catch(err){ /* stockage indisponible : on garde l'état en mémoire */ }
+}
+function sauver(){
+  try{ localStorage.setItem(CLE, JSON.stringify(etat)); }catch(err){}
+}
+
+/* ---------------------------------------------------------
+   Outils
+   --------------------------------------------------------- */
+function fc(n){ return Math.round(n).toLocaleString('fr-FR') + " FC"; }
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function maintenant(){
+  return new Date().toLocaleString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+function numeroValide(t){
+  return /^(\+243|243|0)?[0-9]{9}$/.test(t.replace(/[\s\-]/g, ''));
+}
+
+const ICONES = {
+  envoyer: '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  deposer: '<svg viewBox="0 0 24 24"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>',
+  retirer: '<svg viewBox="0 0 24 24"><path d="M12 20V8M6 13l6-6 6 6M5 4h14"/></svg>',
+  payer: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>'
+};
+
+/* ---------------------------------------------------------
+   Description de chaque opération
+   --------------------------------------------------------- */
+const ECRANS = {
+  envoyer: {
+    titre: "Envoyer de l'argent",
+    typeTarif: "envoi",
+    labelOperateur: "Réseau du destinataire",
+    labelTel: "Numéro du destinataire",
+    avecNom: true,
+    bouton: "Voir le résumé"
+  },
+  deposer: {
+    titre: "Déposer de l'argent",
+    typeTarif: "depot",
+    labelOperateur: "Déposer depuis mon compte",
+    labelTel: "Mon numéro",
+    avecNom: false,
+    bouton: "Voir le résumé"
+  },
+  retirer: {
+    titre: "Retirer de l'argent",
+    typeTarif: "retrait",
+    labelOperateur: "Retirer vers mon compte",
+    labelTel: "Mon numéro",
+    avecNom: false,
+    bouton: "Voir le résumé"
+  },
+  payer: {
+    titre: "Payer en ligne",
+    typeTarif: "paiement",
+    labelOperateur: "Payer avec",
+    labelTel: "Mon numéro",
+    avecNom: false,
+    bouton: "Voir le résumé"
+  }
+};
+
+/* Calcule ce que coûte l'opération et l'effet sur le solde */
+function calculer(cle, saisie){
+  const m = saisie.montant;
+  if(cle === "envoyer"){
+    const frais = calculerFrais(TARIFS[saisie.operateur].envoi, m);
+    return { frais, delta: -(m + frais), lignes: [
+      ["Destinataire", (saisie.nom ? saisie.nom + " · " : "") + saisie.tel],
+      ["Réseau", saisie.operateur],
+      ["Montant envoyé", fc(m)],
+      ["Frais", frais ? fc(frais) : "Gratuit"],
+      ["Total débité de mon solde", fc(m + frais)]
+    ], titreTx: "Envoi à " + (saisie.nom || saisie.tel), affiche: -(m + frais) };
+  }
+  if(cle === "deposer"){
+    const frais = calculerFrais(TARIFS[saisie.operateur].depot, m);
+    return { frais, delta: m - frais, lignes: [
+      ["Depuis", saisie.operateur + " · " + saisie.tel],
+      ["Montant déposé", fc(m)],
+      ["Frais", frais ? fc(frais) : "Gratuit"],
+      ["Crédité sur mon solde", fc(m - frais)]
+    ], titreTx: "Dépôt depuis " + saisie.operateur, affiche: m - frais };
+  }
+  if(cle === "retirer"){
+    const frais = calculerFrais(TARIFS[saisie.operateur].retrait, m);
+    return { frais, delta: -(m + frais), lignes: [
+      ["Vers", saisie.operateur + " · " + saisie.tel],
+      ["Montant reçu sur mon compte", fc(m)],
+      ["Frais", frais ? fc(frais) : "Gratuit"],
+      ["Total débité de mon solde", fc(m + frais)]
+    ], titreTx: "Retrait vers " + saisie.operateur, affiche: -(m + frais) };
+  }
+  /* payer */
+  if(saisie.operateur === "Mon solde"){
+    return { frais: 0, delta: -m, lignes: [
+      ["Boutique", saisie.nom],
+      ["Payé avec", "Mon solde FrasoPay"],
+      ["Frais", "Gratuit"],
+      ["Total débité de mon solde", fc(m)]
+    ], titreTx: "Achat chez " + saisie.nom, affiche: -m };
+  }
+  const frais = calculerFrais(TARIFS[saisie.operateur].paiement, m);
+  return { frais, delta: 0, lignes: [
+    ["Boutique", saisie.nom],
+    ["Payé avec", saisie.operateur + " · " + saisie.tel],
+    ["Montant de l'achat", fc(m)],
+    ["Frais", frais ? fc(frais) : "Gratuit"],
+    ["Total prélevé sur " + saisie.operateur, fc(m + frais)]
+  ], titreTx: "Achat chez " + saisie.nom, affiche: -(m + frais), viaOperateur: saisie.operateur };
+}
+
+/* ---------------------------------------------------------
+   Vues
+   --------------------------------------------------------- */
+const vue = document.getElementById('vue');
+
+function accueil(){
+  const lignes = etat.tx.slice(0, 8).map(t => `
+    <div class="tx">
+      <div class="tx-info">
+        <div class="tx-titre">${esc(t.titre)}</div>
+        <div class="tx-detail">${esc(t.date)}${t.via ? " · via " + esc(t.via) : ""}</div>
+      </div>
+      <div class="tx-montant ${t.affiche >= 0 ? 'plus' : 'moins'}">${t.affiche >= 0 ? '+' : '−'} ${fc(Math.abs(t.affiche))}</div>
+    </div>`).join('');
+
+  vue.innerHTML = `
+    <div class="marque">FrasoPay</div>
+    <div class="carte-solde">
+      <div class="etiquette">Mon solde (fictif)</div>
+      <div class="solde">${fc(etat.solde)}</div>
+    </div>
+    <div class="actions">
+      <button class="action" data-go="envoyer">${ICONES.envoyer}Envoyer</button>
+      <button class="action" data-go="deposer">${ICONES.deposer}Déposer</button>
+      <button class="action" data-go="retirer">${ICONES.retirer}Retirer</button>
+      <button class="action" data-go="payer">${ICONES.payer}Payer en ligne</button>
+    </div>
+    <h2>Dernières opérations</h2>
+    ${lignes || '<div class="vide">Aucune opération pour l\'instant.<br>Essaie un dépôt ou un envoi.</div>'}
+    <div class="pied">
+      Ceci est une démonstration. Les opérateurs ne sont pas connectés, les soldes sont fictifs et les frais sont des exemples. Pour faire de vrais paiements, il faut un partenaire de paiement agréé et un serveur sécurisé.
+    </div>
+    <button class="lien" id="reset">Remettre la démo à zéro</button>
+  `;
+  vue.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => formulaire(b.dataset.go)));
+  document.getElementById('reset').addEventListener('click', () => {
+    etat = ETAT_INITIAL();
+    sauver();
+    accueil();
+  });
+}
+
+function formulaire(cle, saisie, erreur){
+  const cfg = ECRANS[cle];
+  const s = saisie || { operateur: cle === "payer" ? "Mon solde" : OPERATEURS[0], tel: "", nom: "", montant: "" };
+
+  const options = (cle === "payer" ? ["Mon solde"].concat(OPERATEURS) : OPERATEURS)
+    .map(o => `<option value="${esc(o)}" ${o === s.operateur ? 'selected' : ''}>${esc(o === "Mon solde" ? "Mon solde FrasoPay" : o)}</option>`).join('');
+
+  const champNom = cfg.avecNom ? `
+    <div class="champ">
+      <label for="nom">Nom du destinataire (facultatif)</label>
+      <input type="text" id="nom" maxlength="40" autocomplete="off" value="${esc(s.nom)}" placeholder="Ex. Maman">
+    </div>` : '';
+
+  const champBoutique = cle === "payer" ? `
+    <div class="champ">
+      <label for="nom">Boutique en ligne</label>
+      <input type="text" id="nom" maxlength="40" autocomplete="off" value="${esc(s.nom)}" placeholder="Ex. Ma boutique">
+    </div>` : '';
+
+  const champTel = (cle === "payer" && s.operateur === "Mon solde") ? '' : `
+    <div class="champ" id="bloc-tel">
+      <label for="tel">${cfg.labelTel}</label>
+      <input type="tel" id="tel" inputmode="tel" autocomplete="off" value="${esc(s.tel)}" placeholder="0990000000">
+    </div>`;
+
+  vue.innerHTML = `
+    <button class="retour" id="retour">‹ Retour</button>
+    <div class="titre-ecran">${cfg.titre}</div>
+    ${erreur ? `<div class="erreur" role="alert">${esc(erreur)}</div>` : ''}
+    ${champBoutique}
+    <div class="champ">
+      <label for="operateur">${cfg.labelOperateur}</label>
+      <select id="operateur">${options}</select>
+    </div>
+    <div id="zone-tel">${champTel}${champNom}</div>
+    <div class="champ">
+      <label for="montant">Montant (FC)</label>
+      <input type="number" class="gros" id="montant" inputmode="numeric" min="0" placeholder="10000" value="${esc(s.montant)}">
+    </div>
+    <div class="indice" id="indice"></div>
+    <button class="btn" id="continuer">${cfg.bouton}</button>
+  `;
+
+  const lire = () => ({
+    operateur: document.getElementById('operateur').value,
+    tel: document.getElementById('tel') ? document.getElementById('tel').value.trim() : "",
+    nom: document.getElementById('nom') ? document.getElementById('nom').value.trim() : "",
+    montant: document.getElementById('montant').value
+  });
+
+  const majIndice = () => {
+    const cur = lire();
+    const m = parseFloat(cur.montant);
+    const zone = document.getElementById('indice');
+    if(!m || m <= 0 || cle === "payer"){ zone.innerHTML = ""; return; }
+    const parOp = OPERATEURS.map(o => ({ o, f: calculerFrais(TARIFS[o][cfg.typeTarif], m) })).sort((a, b) => a.f - b.f);
+    const actuel = parOp.find(x => x.o === cur.operateur);
+    const meilleur = parOp[0];
+    if(meilleur.f < actuel.f){
+      zone.innerHTML = `Frais avec ${esc(cur.operateur)} : <b>${fc(actuel.f)}</b>. Le moins cher est ${esc(meilleur.o)} (${meilleur.f ? fc(meilleur.f) : 'gratuit'}).`;
+    } else {
+      zone.innerHTML = `Frais avec ${esc(cur.operateur)} : <b>${actuel.f ? fc(actuel.f) : 'gratuit'}</b>. C'est le moins cher.`;
+    }
+  };
+
+  document.getElementById('retour').addEventListener('click', accueil);
+  document.getElementById('montant').addEventListener('input', majIndice);
+  document.getElementById('operateur').addEventListener('change', () => {
+    /* Sur « Payer en ligne », le numéro n'est utile que si on paie via un opérateur */
+    if(cle === "payer") formulaire(cle, lire(), null);
+    else majIndice();
+  });
+  majIndice();
+
+  document.getElementById('continuer').addEventListener('click', () => {
+    const cur = lire();
+    const m = parseFloat(cur.montant);
+    const besoinTel = !(cle === "payer" && cur.operateur === "Mon solde");
+    let msg = "";
+    if(cle === "payer" && !cur.nom) msg = "Entre le nom de la boutique.";
+    else if(besoinTel && !numeroValide(cur.tel)) msg = "Le numéro doit avoir 9 chiffres (ex. 0990000000 ou +243990000000).";
+    else if(!m || m < 100) msg = "Le montant minimum est de 100 FC.";
+    else if(m !== Math.floor(m)) msg = "Entre un montant entier, sans virgule.";
+    if(msg){ formulaire(cle, cur, msg); return; }
+
+    const calc = calculer(cle, { operateur: cur.operateur, tel: cur.tel, nom: cur.nom, montant: m });
+    if(calc.delta < 0 && etat.solde + calc.delta < 0){
+      formulaire(cle, cur, "Solde insuffisant : il te faut " + fc(-calc.delta) + " et tu as " + fc(etat.solde) + ". Fais d'abord un dépôt.");
+      return;
+    }
+    resume(cle, cur, calc);
+  });
+}
+
+function resume(cle, saisie, calc){
+  const cfg = ECRANS[cle];
+  vue.innerHTML = `
+    <button class="retour" id="retour">‹ Modifier</button>
+    <div class="titre-ecran">${cfg.titre}</div>
+    <div class="resume">
+      ${calc.lignes.map((l, i) => `
+        <div class="resume-ligne ${i === calc.lignes.length - 1 ? 'total' : ''}">
+          <span>${esc(l[0])}</span><b>${esc(l[1])}</b>
+        </div>`).join('')}
+    </div>
+    <button class="btn" id="confirmer">Confirmer (démo)</button>
+    <button class="btn-sec" id="annuler">Annuler</button>
+  `;
+  document.getElementById('retour').addEventListener('click', () => formulaire(cle, saisie, null));
+  document.getElementById('annuler').addEventListener('click', accueil);
+  document.getElementById('confirmer').addEventListener('click', () => {
+    etat.solde += calc.delta;
+    etat.tx.unshift({ titre: calc.titreTx, affiche: calc.affiche, date: maintenant(), via: calc.viaOperateur || "" });
+    etat.tx = etat.tx.slice(0, 30);
+    sauver();
+    succes(calc);
+  });
+}
+
+function succes(calc){
+  vue.innerHTML = `
+    <div class="succes" role="status">
+      <div class="rond"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+      <h3>Opération simulée</h3>
+      <p>${esc(calc.titreTx)}<br>Nouveau solde fictif : ${fc(etat.solde)}</p>
+    </div>
+    <button class="btn" id="fini">Retour à l'accueil</button>
+  `;
+  document.getElementById('fini').addEventListener('click', accueil);
+}
+
+charger();
+accueil();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+
+</body>
+</html>
